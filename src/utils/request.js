@@ -57,11 +57,11 @@ request.interceptors.request.use(config => {
 // response interceptor
 request.interceptors.response.use((response) => {
   // debugger
-  console.log(`{
-    url: '${response.config.url}',
-    type: '${response.config.method}',
-    response: config =>  (${JSON.stringify(response.data)})}
-  `)
+  // console.log(`{
+  //   url: '${response.config.url}',
+  //   type: '${response.config.method}',
+  //   response: config =>  (${JSON.stringify(response.data)})}
+  // `)
   return response.data
 }, errorHandler)
 
