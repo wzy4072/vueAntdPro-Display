@@ -1,7 +1,7 @@
 <template>
   <page-header-wrapper>
     <!-- <ColumnHandler v-bind:checkedKeys="diaPlayColumnsKeys" v-bind:columns="columns"></ColumnHandler> -->
-    <ColumnHandler v-bind:checkedKeys.sync="diaPlayColumnsKeys" v-bind:columns.sync="columns"></ColumnHandler>
+    <!-- <ColumnHandler v-bind:checkedKeys.sync="diaPlayColumnsKeys" v-bind:columns.sync="columns"></ColumnHandler> -->
 
     <a-card :bordered="false">
       <div class="table-page-search-wrapper">

@@ -1,5 +1,27 @@
 <template>
   <div class="custom-columns-tool">
+    <draggable
+      class="list-group"
+      tag="ul"
+      v-model="list"
+      v-bind="dragOptions"
+      :move="onMove"
+      @start="isDragging = true"
+      @end="isDragging = false"
+    >
+      <transition-group type="transition" :name="'flip-list'">
+        <li class="list-group-item" v-for="element in list" :key="element.order">
+          <i
+            :class="element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'"
+            @click="element.fixed = !element.fixed"
+            aria-hidden="true"
+          ></i>
+          {{ element.name }}
+          <span class="badge">{{ element.order }}</span>
+        </li>
+      </transition-group>
+    </draggable>
+
     <a-row>
       <a-row>
         <a-checkbox
@@ -23,29 +45,65 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+const message = ['vue.draggable', 'draggable', 'component', 'for', 'vue.js 2.0', 'based', 'on', 'Sortablejs']
 export default {
+  components: {
+    draggable,
+  },
   props: ['columns', 'checkedKeys'],
   data() {
-    return {}
+    return {
+      list: message.map((name, index) => {
+        return { name, order: index + 1, fixed: false }
+      }),
+      myArray: [
+        { id: 1, name: 11 },
+        { id: 12, name: 12 },
+        { id: 13, name: 13 },
+        { id: 14, name: 14 },
+        { id: 15, name: 15 },
+        { id: 16, name: 16 },
+        { id: 17, name: 17 },
+      ],
+      isDragging: false,
+    }
+  },
+  computed: {
+    dragOptions() {
+      return {
+        animation: 0,
+        group: 'description',
+        // disabled: !this.editable,
+        ghostClass: 'ghost',
+      }
+    },
   },
   methods: {
+    onMove({ relatedContext, draggedContext }) {
+      // const relatedElement = relatedContext.element;
+      // const draggedElement = draggedContext.element;
+      // return (
+      //   (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
+      // );
+    },
     colsChangeAll(e) {
       const keys = e.target.checked ? this.columns.map((i) => i.dataIndex || i.title) : []
-      debugger
-      this.$emit('update:checkedKeys', keys)
+      this.$emit('updatecheckedKeys', keys)
     },
     checkChange({ target: { value, checked } }) {
       const newKeys = new Set(this.checkedKeys)
       checked ? newKeys.add(value) : newKeys.delete(value)
-      this.$emit('update:checkedKeys', [...newKeys])
+      this.$emit('updatecheckedKeys', [...newKeys])
     },
     sortItem(from, to) {
       const copyColumns = [...this.columns]
       copyColumns.splice(to, 0, ...copyColumns.splice(from, 1))
-      debugger
-      this.$emit('update:columns', copyColumns)
+      this.$emit('updatecolumns', copyColumns)
     },
-    restColumns() {},
+    restColumns() {
+      this.$emit('resetColumns')
+    },
   },
 }
 </script>
@@ -78,5 +136,30 @@ export default {
 }
 .col-tool-check-item i:hover {
   color: #1890ff;
+}
+
+.flip-list-move {
+  transition: transform 0.5s;
+}
+
+.no-move {
+  transition: transform 0s;
+}
+
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
+}
+
+.list-group {
+  min-height: 20px;
+}
+
+.list-group-item {
+  cursor: move;
+}
+
+.list-group-item i {
+  cursor: pointer;
 }
 </style>

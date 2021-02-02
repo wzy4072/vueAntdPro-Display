@@ -1,5 +1,7 @@
 import T from 'ant-design-vue/es/table/Table'
 import get from 'lodash.get'
+import ColumnHandler from '@/components/Table/ColumnHandler'
+import cloneDeep from 'lodash.clonedeep'
 
 export default {
   data() {
@@ -11,7 +13,10 @@ export default {
 
       localLoading: false,
       localDataSource: [],
-      localPagination: Object.assign({}, this.pagination)
+      localPagination: Object.assign({}, this.pagination),
+
+      disPlayColumnsKeys: [],
+      dynamicColumns: []
     }
   },
   props: Object.assign({}, T.props, {
@@ -77,6 +82,13 @@ export default {
     }
   }),
   watch: {
+    columns: {
+      handler(nVal) {
+        this.dynamicColumns = cloneDeep(nVal)
+        this.disPlayColumnsKeys = nVal.map((i) => i.dataIndex || i.title)
+      },
+      immediate: true
+    },
     'localPagination.current'(val) {
       this.pageURI && this.$router.push({
         ...this.$route,
@@ -300,11 +312,23 @@ export default {
       this[k] && (props[k] = this[k])
       return props[k]
     })
+    props.columns = this.dynamicColumns.filter(({ title, dataIndex }) => this.disPlayColumnsKeys.includes(dataIndex) || this.disPlayColumnsKeys.includes(title))
     const table = (
       <a-table {...{ props, scopedSlots: { ...this.$scopedSlots } }} onChange={this.loadData} onExpand={(expanded, record) => { this.$emit('expand', expanded, record) }}>
         <template slot="title" slot-scope="currentPageData">
-          Header
-    </template>
+          <ColumnHandler
+            checkedKeys={this.disPlayColumnsKeys}
+            columns={this.dynamicColumns}
+            onupdatecolumns={v => this.dynamicColumns = v}
+            onupdatecheckedKeys={v => this.disPlayColumnsKeys = v}
+            onresetColumns={() => {
+              this.dynamicColumns = cloneDeep(this.columns)
+              this.disPlayColumnsKeys = this.dynamicColumns.map((i) => i.dataIndex || i.title)
+            }
+            }
+          >
+          </ColumnHandler>
+        </template>
         { Object.keys(this.$slots).map(name => (<template slot={name}>{this.$slots[name]}</template>))}
       </a-table>
     )
