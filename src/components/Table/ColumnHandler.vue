@@ -1,28 +1,23 @@
 <template>
   <div class="custom-columns-tool">
-    <draggable
-      class="list-group"
-      tag="ul"
-      v-model="list"
-      v-bind="dragOptions"
-      :move="onMove"
-      @start="isDragging = true"
-      @end="isDragging = false"
-    >
-      <transition-group type="transition" :name="'flip-list'">
-        <li class="list-group-item" v-for="element in list" :key="element.order">
-          <i
-            :class="element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'"
-            @click="element.fixed = !element.fixed"
-            aria-hidden="true"
-          ></i>
-          {{ element.name }}
-          <span class="badge">{{ element.order }}</span>
-        </li>
-      </transition-group>
-    </draggable>
+    <a-checkbox-group v-bind:value="checkedKeys">
+      <draggable class="list-group" tag="ul" :value="columns" v-bind="dragOptions" @end="onDragEnd">
+        <transition-group type="transition" :name="'flip-list'">
+          <li
+            class="list-group-item col-tool-check-item"
+            v-for="(col, cIndex) in columns"
+            :key="cIndex + (col.dataIndex || col.title)"
+          >
+            <a-checkbox :value="col.dataIndex || col.title" @change="checkChange"> {{ col.title }} </a-checkbox>
+            <a-icon type="vertical-align-top" @click="sortItem(cIndex, 0)" />
+            <a-icon type="vertical-align-bottom" @click="sortItem(cIndex, columns.length)" />
+          </li>
+        </transition-group>
+      </draggable>
+      <div></div>
+    </a-checkbox-group>
 
-    <a-row>
+    <!-- <a-row>
       <a-row>
         <a-checkbox
           @change="colsChangeAll"
@@ -40,53 +35,57 @@
           <a-icon type="vertical-align-bottom" @click="sortItem(cIndex, columns.length)" />
         </div>
       </a-checkbox-group>
-    </a-row>
+    </a-row> -->
   </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable'
+import cloneDeep from 'lodash.clonedeep'
+
 const message = ['vue.draggable', 'draggable', 'component', 'for', 'vue.js 2.0', 'based', 'on', 'Sortablejs']
 export default {
   components: {
     draggable,
   },
   props: ['columns', 'checkedKeys'],
+
   data() {
     return {
+      // dynamicColumns: [],
       list: message.map((name, index) => {
         return { name, order: index + 1, fixed: false }
       }),
-      myArray: [
-        { id: 1, name: 11 },
-        { id: 12, name: 12 },
-        { id: 13, name: 13 },
-        { id: 14, name: 14 },
-        { id: 15, name: 15 },
-        { id: 16, name: 16 },
-        { id: 17, name: 17 },
-      ],
       isDragging: false,
     }
+  },
+  watch: {
+    // columns: {
+    //   handler(nVal) {
+    //     console.log('columns 改变了', nVal.map((item) => item.title).join('-'))
+    //     this.dynamicColumns = cloneDeep(nVal)
+    //   },
+    //   immediate: true,
+    // },
+    // dynamicColumns(nv) {
+    //   this.$emit('updatecolumns', nv)
+    // },
   },
   computed: {
     dragOptions() {
       return {
         animation: 0,
-        group: 'description',
+        // group: 'description',
         // disabled: !this.editable,
         ghostClass: 'ghost',
       }
     },
   },
   methods: {
-    onMove({ relatedContext, draggedContext }) {
-      // const relatedElement = relatedContext.element;
-      // const draggedElement = draggedContext.element;
-      // return (
-      //   (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
-      // );
+    onDragEnd({ to, from, item, clone, oldIndex, newIndex }) {
+      this.sortItem(oldIndex, newIndex)
     },
+    // },
     colsChangeAll(e) {
       const keys = e.target.checked ? this.columns.map((i) => i.dataIndex || i.title) : []
       this.$emit('updatecheckedKeys', keys)
@@ -110,6 +109,7 @@ export default {
 
 <style >
 .custom-columns-tool {
+  height: 300px;
   background: #fff;
 }
 .col-tool-check-item {
