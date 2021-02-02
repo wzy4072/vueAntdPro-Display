@@ -1,6 +1,6 @@
 <template>
   <page-header-wrapper>
-    <!-- <ColumnHandler v-bind:checkedKeys="diaPlayColumnsKeys" v-bind:columns="columns"></ColumnHandler> -->
+    <a-date-picker @openChange="openChange" />
     <!-- <ColumnHandler v-bind:checkedKeys.sync="diaPlayColumnsKeys" v-bind:columns.sync="columns"></ColumnHandler> -->
 
     <a-card :bordered="false">
@@ -242,6 +242,9 @@ export default {
     },
   },
   methods: {
+    openChange(status){
+      console.log('openChange status',status)
+    },
     handleAdd() {
       this.mdl = null
       this.visible = true

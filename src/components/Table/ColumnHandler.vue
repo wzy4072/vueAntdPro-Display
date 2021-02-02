@@ -2,7 +2,7 @@
   <div class="custom-columns-tool">
     <a-icon type="setting" class="tool-icon-btn" :class="{ onfocus: visable }" @click="visable = !visable" />
     <div class="tool-win" :class="{ onfocus: visable }">
-      <a-row>
+      <a-row class="tool-win-head">
         <a-checkbox
           @change="colsChangeAll"
           :indeterminate="checkedKeys.length > 0 && checkedKeys.length !== columns.length"
@@ -10,7 +10,7 @@
         >
           列展示
         </a-checkbox>
-        <a-button type="link" size="small" @click="restColumns" style="float:right;"> 重置 </a-button>
+        <a-button type="link" size="small" @click="restColumns" style="float: right"> 重置 </a-button>
       </a-row>
       <a-checkbox-group v-bind:value="checkedKeys">
         <draggable class="list-group" tag="ul" v-model="dynamicColumns" v-bind="dragOptions" @end="onDragEnd">
@@ -111,8 +111,14 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   display: none;
 }
+
 .custom-columns-tool .tool-win.onfocus {
   display: block;
+}
+
+.custom-columns-tool .tool-win .tool-win-head {
+  padding: 8px 12px;
+  border-bottom: 1px solid #efefef;
 }
 
 i.tool-icon-btn.anticon.anticon-setting {
