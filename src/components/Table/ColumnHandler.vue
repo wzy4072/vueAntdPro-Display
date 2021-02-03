@@ -1,7 +1,7 @@
 <template>
   <div class="custom-columns-tool">
-    <a-icon type="setting" class="tool-icon-btn" :class="{ onfocus: visable }" @click="visable = !visable" />
-    <div class="tool-win" :class="{ onfocus: visable }">
+    <a-icon type="setting" class="tool-icon-btn" :class="{ onfocus: visable }" @click="toggleDisplay(!visable)" />
+    <div class="tool-win" :class="{ onfocus: visable, start: animaStart, end: !animaStart }">
       <a-row class="tool-win-head">
         <a-checkbox
           @change="colsChangeAll"
@@ -34,6 +34,16 @@
 <script>
 import draggable from 'vuedraggable'
 import cloneDeep from 'lodash.clonedeep'
+import addEventListener from 'ant-design-vue/es/vc-util/Dom/addEventListener'
+import contains from 'ant-design-vue/es/vc-util/Dom/contains'
+const findDOMNode = (instance) => {
+  let node = instance && (instance.$el || instance)
+  while (node && !node.tagName) {
+    node = node.nextSibling
+  }
+  return node
+}
+
 const message = ['vue.draggable', 'draggable', 'component', 'for', 'vue.js 2.0', 'based', 'on', 'Sortablejs']
 export default {
   components: {
@@ -49,6 +59,8 @@ export default {
       isDragging: false,
       dynamicColumns: [],
       visable: false,
+      animaStart: true,
+      clickOutsideHandler: null,
     }
   },
   watch: {
@@ -58,6 +70,13 @@ export default {
         this.dynamicColumns = cloneDeep(nVal)
       },
       immediate: true,
+    },
+    visable(nVal) {
+      if (nVal) {
+        this.clickOutsideHandler = addEventListener(window.document, 'mousedown', this.onDocumentClick)
+      } else {
+        this.clickOutsideHandler?.remove()
+      }
     },
   },
   computed: {
@@ -69,6 +88,29 @@ export default {
     },
   },
   methods: {
+    onDocumentClick(event) {
+      const target = event.target
+      const root = findDOMNode(this)
+      if (!contains(root, target)) {
+        this.close()
+      }
+    },
+    toggleDisplay(v) {
+      if (this.visable === false) {
+        this.visable = true
+        setTimeout(() => {
+          this.animaStart = false
+        })
+      } else {
+        this.animaStart = true
+        setTimeout(() => {
+          this.visable = false
+        })
+      }
+    },
+    close() {
+      this.toggleDisplay(false)
+    },
     onDragEnd({ to, from, item, clone, oldIndex, newIndex }) {
       this.$emit('updatecolumns', this.dynamicColumns)
     },
@@ -105,13 +147,21 @@ export default {
 }
 .custom-columns-tool .tool-win {
   position: absolute;
-  top: 26px;
   left: 0;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   display: none;
+  animation: all 2000;
+  top: 26;
+  overflow: hidden;
+  // transform: rotateX();
 }
-
+.custom-columns-tool .tool-win.start {
+  height: 0;
+}
+.custom-columns-tool .tool-win.end {
+  height: auto;
+}
 .custom-columns-tool .tool-win.onfocus {
   display: block;
 }
