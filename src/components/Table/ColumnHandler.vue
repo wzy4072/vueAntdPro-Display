@@ -144,31 +144,32 @@ export default {
   position: relative;
   display: inline-block;
   z-index: 9999;
-}
-.custom-columns-tool .tool-win {
-  position: absolute;
-  left: 0;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  display: none;
-  animation: all 2000;
-  top: 26;
-  overflow: hidden;
-  // transform: rotateX();
-}
-.custom-columns-tool .tool-win.start {
-  height: 0;
-}
-.custom-columns-tool .tool-win.end {
-  height: auto;
-}
-.custom-columns-tool .tool-win.onfocus {
-  display: block;
-}
-
-.custom-columns-tool .tool-win .tool-win-head {
-  padding: 8px 12px;
-  border-bottom: 1px solid #efefef;
+  &:hover {
+    color: @primary-5;
+  }
+  .tool-win {
+    position: absolute;
+    left: 0;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: none;
+    animation: all 500;
+    top: 26;
+    overflow: hidden;
+    &.start {
+      height: 0;
+    }
+    &.end {
+      height: auto;
+    }
+    &.onfocus {
+      display: block;
+    }
+    .tool-win-head {
+      padding: 8px 12px;
+      border-bottom: 1px solid #efefef;
+    }
+  }
 }
 
 i.tool-icon-btn.anticon.anticon-setting {
