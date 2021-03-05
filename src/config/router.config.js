@@ -40,7 +40,19 @@ export const asyncRouterMap = [
             name: 'Workplace',
             component: () => import('@/views/dashboard/Workplace'),
             meta: { title: 'menu.dashboard.workplace', keepAlive: true, permission: ['dashboard'] }
-          }
+          },
+          {
+            path: '/dashboard/demo1',
+            name: 'Demo1',
+            component: () => import('@/views/dashboard/demo1'),
+            meta: { title: 'demo1',  permission: ['dashboard'] }
+          },
+          {
+            path: '/dashboard/demo2',
+            name: 'Demo2',
+            component: () => import('@/views/dashboard/demo2'),
+            meta: { title: 'demo2',  permission: ['dashboard'] }
+          },
         ]
       },
       // forms

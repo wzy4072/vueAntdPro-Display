@@ -36,6 +36,7 @@ import draggable from 'vuedraggable'
 import cloneDeep from 'lodash.clonedeep'
 import addEventListener from 'ant-design-vue/es/vc-util/Dom/addEventListener'
 import contains from 'ant-design-vue/es/vc-util/Dom/contains'
+
 const findDOMNode = (instance) => {
   let node = instance && (instance.$el || instance)
   while (node && !node.tagName) {

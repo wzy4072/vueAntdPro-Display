@@ -1,10 +1,24 @@
 import T from 'ant-design-vue/es/table/Table'
 import get from 'lodash.get'
-import ColumnHandler from '@/components/Table/ColumnHandler'
+import ColumnHandler from '@/components/Table/ColumnHandler2'
 import cloneDeep from 'lodash.clonedeep'
+/**
+ * 生成简单的唯一key
+ * @param {*} keys
+ */
+function generateUniqueKey (keys) {
+  const uniKey = 'uniKey' + Math.random()
+    .toString()
+    .slice(2, 12)
+  if (!keys.includes(uniKey)) {
+    return uniKey
+  } else {
+    return generateUniqueKey(keys)
+  }
+}
 
 export default {
-  data() {
+  data () {
     return {
       needTotalList: [],
 
@@ -44,6 +58,10 @@ export default {
       type: String,
       default: 'default'
     },
+    useDragColumns: {
+      type: Boolean,
+      default: false
+    },
     /**
      * alert: {
      *   show: true,
@@ -82,14 +100,14 @@ export default {
     }
   }),
   watch: {
-    columns: {
-      handler(nVal) {
-        this.dynamicColumns = cloneDeep(nVal)
-        this.disPlayColumnsKeys = nVal.map((i) => i.dataIndex || i.title)
-      },
-      immediate: true
-    },
-    'localPagination.current'(val) {
+    // columns: {
+    //   handler(nVal) {
+    //     this.dynamicColumns = cloneDeep(nVal)
+    //     this.disPlayColumnsKeys = nVal.map((i) => i.dataIndex || i.title)
+    //   },
+    //   immediate: true
+    // },
+    'localPagination.current' (val) {
       this.pageURI && this.$router.push({
         ...this.$route,
         name: this.$route.name,
@@ -102,23 +120,23 @@ export default {
       this.selectedRowKeys = []
       this.selectedRows = []
     },
-    pageNum(val) {
+    pageNum (val) {
       Object.assign(this.localPagination, {
         current: val
       })
     },
-    pageSize(val) {
+    pageSize (val) {
       Object.assign(this.localPagination, {
         pageSize: val
       })
     },
-    showSizeChanger(val) {
+    showSizeChanger (val) {
       Object.assign(this.localPagination, {
         showSizeChanger: val
       })
     }
   },
-  created() {
+  created () {
     const { pageNo } = this.$route.params
     const localPageNum = this.pageURI && (pageNo && parseInt(pageNo)) || this.pageNum
     this.localPagination = ['auto', true].includes(this.showPagination) && Object.assign({}, this.localPagination, {
@@ -135,7 +153,7 @@ export default {
      * 如果参数为 true, 则强制刷新到第一页
      * @param Boolean bool
      */
-    refresh(bool = false) {
+    refresh (bool = false) {
       bool && (this.localPagination = Object.assign({}, {
         current: 1, pageSize: this.pageSize
       }))
@@ -147,7 +165,7 @@ export default {
      * @param {Object} filters 过滤条件
      * @param {Object} sorter 排序条件
      */
-    loadData(pagination, filters, sorter) {
+    loadData (pagination, filters, sorter) {
       this.localLoading = true
       const parameter = Object.assign({
         pageNo: (pagination && pagination.current) ||
@@ -197,7 +215,7 @@ export default {
         })
       }
     },
-    initTotalList(columns) {
+    initTotalList (columns) {
       const totalList = []
       columns && columns instanceof Array && columns.forEach(column => {
         if (column.needTotal) {
@@ -214,7 +232,7 @@ export default {
      * @param selectedRowKeys
      * @param selectedRows
      */
-    updateSelect(selectedRowKeys, selectedRows) {
+    updateSelect (selectedRowKeys, selectedRows) {
       this.selectedRows = selectedRows
       this.selectedRowKeys = selectedRowKeys
       const list = this.needTotalList
@@ -231,7 +249,7 @@ export default {
     /**
      * 清空 table 已选中项
      */
-    clearSelected() {
+    clearSelected () {
       if (this.rowSelection) {
         this.rowSelection.onChange([], [])
         this.updateSelect([], [])
@@ -242,7 +260,7 @@ export default {
      * @param callback
      * @returns {*}
      */
-    renderClear(callback) {
+    renderClear (callback) {
       if (this.selectedRowKeys.length <= 0) return null
       return (
         <a style="margin-left: 24px" onClick={() => {
@@ -251,7 +269,7 @@ export default {
         }}>清空</a>
       )
     },
-    renderAlert() {
+    renderAlert () {
       // 绘制统计列数据
       const needTotalItems = this.needTotalList.map((item) => {
         return (<span style="margin-right: 12px">
@@ -276,10 +294,20 @@ export default {
           </template>
         </a-alert>
       )
+    },
+    setDragColumns () {
+      // 模拟数据
+      var mockColumns = [{ 'dataIndex': 0.907690597846591, 'title': '#', required: true, 'width': 100, 'isEdit': false, 'show': true, 'scopedSlots': { 'customRender': 'serial' }, 'fixed': 'left' }, { 'dataIndex': 'action', required: true, 'title': '操作', 'width': 200, 'isEdit': false, 'show': true, 'scopedSlots': { 'customRender': 'action' }, 'fixed': 'right' }, { 'dataIndex': 'no', 'title': '规则编号', 'width': 200, 'isEdit': false, 'show': true, 'sorter': true, 'scrollColumns': false }, { 'dataIndex': 'description', 'title': '描述', 'width': 150, 'isEdit': false, 'show': false, 'sorter': true, 'scopedSlots': { 'customRender': 'description' }, 'scrollColumns': false }, { 'dataIndex': 'callNo', 'title': '服务调用次数', 'width': 300, 'isEdit': false, 'show': true, 'sorter': true, 'needTotal': true, 'scrollColumns': false }, { 'dataIndex': 'status', 'title': '状态', 'width': 200, 'isEdit': false, 'show': true, 'scopedSlots': { 'customRender': 'status' }, 'scrollColumns': false }, { 'dataIndex': 'updatedAt', 'title': '更新时间', 'width': 200, 'isEdit': false, 'show': true, 'sorter': true, 'scrollColumns': false }]
+      this.$refs.ColumnHandler.initColumns({ columns: this.dynamicColumns.length === 0 ? mockColumns : this.dynamicColumns })
+    },
+    getDragColumns (columns) {
+      debugger
+      console.log('getDragColumns', JSON.stringify(columns))
+      this.dynamicColumns = [...columns]
     }
   },
 
-  render() {
+  render () {
     const props = {}
     const localKeys = Object.keys(this.$data)
     const showAlert = (typeof this.alert === 'object' && this.alert !== null && this.alert.show) && typeof this.rowSelection.selectedRowKeys !== 'undefined' || this.alert
@@ -312,11 +340,13 @@ export default {
       this[k] && (props[k] = this[k])
       return props[k]
     })
-    props.columns = this.dynamicColumns.filter(({ title, dataIndex }) => this.disPlayColumnsKeys.includes(dataIndex) || this.disPlayColumnsKeys.includes(title))
+    props.scroll = { x: 1300 }
+    props.columns = this.dynamicColumns.length == 0 ? props.columns : this.dynamicColumns
+    // props.columns = this.dynamicColumns.filter(({ title, dataIndex }) => this.disPlayColumnsKeys.includes(dataIndex) || this.disPlayColumnsKeys.includes(title))
     const table = (
       <a-table {...{ props, scopedSlots: { ...this.$scopedSlots } }} onChange={this.loadData} onExpand={(expanded, record) => { this.$emit('expand', expanded, record) }}>
         <template slot="title" slot-scope="currentPageData">
-          <ColumnHandler
+          {/* <ColumnHandler
             checkedKeys={this.disPlayColumnsKeys}
             columns={this.dynamicColumns}
             onupdatecolumns={v => this.dynamicColumns = v}
@@ -327,7 +357,8 @@ export default {
             }
             }
           >
-          </ColumnHandler>
+          </ColumnHandler> */}
+          <ColumnHandler ref="ColumnHandler" nativeOnClick={this.setDragColumns} ongetDragColumns={this.getDragColumns} ></ColumnHandler>
         </template>
         { Object.keys(this.$slots).map(name => (<template slot={name}>{this.$slots[name]}</template>))}
       </a-table>

@@ -5,7 +5,7 @@ const GitRevision = new GitRevisionPlugin()
 const buildDate = JSON.stringify(new Date().toLocaleString())
 const createThemeColorReplacerPlugin = require('./config/plugin.config')
 
-function resolve(dir) {
+function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
@@ -35,7 +35,7 @@ const vueConfig = {
     // webpack plugins
     plugins: [
       // Ignore all locale files of moment.js
-      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
       // new webpack.DefinePlugin({
       //   APP_VERSION: `"${require('./package.json').version}"`,
       //   GIT_HASH: JSON.stringify(getGitHash()),
@@ -102,7 +102,7 @@ const vueConfig = {
     // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
     proxy: {
       '/api': {
-        target: 'https://preview.pro.antdv.com', // 本地服务      
+        target: 'https://preview.pro.antdv.com', // 本地服务
         ws: false,
         changeOrigin: true,
         pathRewrite: {
@@ -116,7 +116,7 @@ const vueConfig = {
         pathRewrite: {
           '/local': ''
         }
-      },
+      }
       // [process.env.VUE_APP_BASE_API]: {
       //   target: `http://localhost:8000/mock`,
       //   changeOrigin: true,

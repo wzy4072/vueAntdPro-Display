@@ -137,10 +137,12 @@ const columns = [
   },
   {
     title: '规则编号',
+    sorter: true,
     dataIndex: 'no',
   },
   {
     title: '描述',
+    sorter: true,
     dataIndex: 'description',
     scopedSlots: { customRender: 'description' },
   },
@@ -242,8 +244,8 @@ export default {
     },
   },
   methods: {
-    openChange(status){
-      console.log('openChange status',status)
+    openChange(status) {
+      console.log('openChange status', status)
     },
     handleAdd() {
       this.mdl = null
